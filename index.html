@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Showcase System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b0f19;
+            --card-bg: #111827;
+            --eplus: #ff0033;
+            --ticketpia: #0055ff;
+            --lawson: #002266;
+            --nol: #9900ff;
+            --ticketmaster: #0044cc;
+            --admin: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        
+        body { 
+            background-color: var(--bg-dark); 
+            color: white; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 40px 20px; 
+        }
+
+        header { text-align: center; margin-bottom: 50px; }
+        h1 { font-size: 2rem; letter-spacing: 2px; display: flex; align-items: center; gap: 15px; justify-content: center; }
+        h1 i { color: #0ea5e9; }
+        .subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: 5px; text-transform: uppercase; letter-spacing: 4px; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 220px;
+        }
+
+        .card:hover { transform: translateY(-5px); }
+        .card::before { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 60px; z-index: 0; opacity: 0.2; }
+        .card-content { position: relative; z-index: 1; }
+
+        /* Brand Specific Overlays */
+        .card.eplus { border-bottom: 4px solid var(--eplus); }
+        .card.eplus::before { background: linear-gradient(transparent, var(--eplus)); }
+        
+        .card.ticketpia { border-bottom: 4px solid var(--ticketpia); }
+        .card.ticketpia::before { background: linear-gradient(transparent, var(--ticketpia)); }
+        
+        .card.lawson { border-bottom: 4px solid #e60012; } /* Lawson uses red accent */
+        .card.lawson::before { background: linear-gradient(transparent, var(--lawson)); }
+        
+        .card.nol { border-bottom: 4px solid var(--nol); }
+        .card.nol::before { background: linear-gradient(transparent, var(--nol)); }
+        
+        .card.ticketmaster { border-bottom: 4px solid var(--ticketmaster); }
+        .card.ticketmaster::before { background: linear-gradient(transparent, var(--ticketmaster)); }
+        
+        .card.admin { border: 1px solid var(--admin); background: rgba(245, 158, 11, 0.05); }
+        .card.admin::before { background: linear-gradient(transparent, var(--admin)); }
+
+        .brand-logo { font-size: 1.8rem; font-weight: bold; margin-bottom: 10px; }
+        .subtext { color: #cbd5e1; font-size: 0.85rem; margin-bottom: 15px; }
+        
+        .tag {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 0.75rem; margin-bottom: 20px;
+        }
+
+        .btn {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: white; padding: 10px 20px; border-radius: 25px;
+            font-weight: 500; cursor: pointer; transition: 0.3s;
+            display: inline-flex; align-items: center; gap: 8px; margin: 0 auto;
+        }
+
+        .card:hover .btn { background: white; color: black; }
+        .card.admin .btn { background: var(--admin); color: #000; border: none; }
+        .card.admin:hover .btn { background: #d97706; color: white; }
+
+        .admin-icon { font-size: 2.5rem; color: var(--admin); margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fa-solid fa-ticket"></i> TICKET SHOWCASE SYSTEM</h1>
+        <div class="subtitle">Multi-Marketplace Portal</div>
+    </header>
+
+    <div class="grid-container">
+        <!-- Eplus -->
+        <a href="marketplaces/eplus.html" class="card eplus">
+            <div class="card-content">
+                <div class="brand-logo">e+ (イープラス)</div>
+                <div class="subtext">コンサート・イベントのチケット</div>
+                <div class="tag"><i class="fa-solid fa-language"></i> Japan - Japanese (ja)</div>
+                <div class="btn"><i class="fa-solid fa-arrow-right"></i> View Marketplace</div>
+            </div>
+        </a>
+
+        <!-- Ticket Pia -->
+        <a href="marketplaces/ticketpia.html" class="card ticketpia">
+            <div class="card-content">
+                <div class="brand-logo">チケットぴあ</div>
+                <div class="subtext">チケットの購入・予約はチケットぴあ</div>
+                <div class="tag"><i class="fa-solid fa-language"></i> Japan - Japanese (ja)</div>
+                <div class="btn"><i class="fa-solid fa-arrow-right"></i> View Marketplace</div>
+            </div>
+        </a>
+
+        <!-- Lawson Ticket -->
+        <a href="marketplaces/lawson.html" class="card lawson">
+            <div class="card-content">
+                <div class="brand-logo">ローソンチケット (l-tike)</div>
+                <div class="subtext">ライブ・スポーツ・イベントのチケット</div>
+                <div class="tag"><i class="fa-solid fa-language"></i> Japan - Japanese (ja)</div>
+                <div class="btn"><i class="fa-solid fa-arrow-right"></i> View Marketplace</div>
+            </div>
+        </a>
+
+        <!-- NOL World -->
+        <a href="marketplaces/nolworld.html" class="card nol">
+            <div class="card-content">
+                <div class="brand-logo">NOL World (놀 월드)</div>
+                <div class="subtext">콘서트, 공연, 스포츠 티켓</div>
+                <div class="tag"><i class="fa-solid fa-language"></i> South Korea - Korean (ko)</div>
+                <div class="btn"><i class="fa-solid fa-arrow-right"></i> View Marketplace</div>
+            </div>
+        </a>
+
+        <!-- Ticketmaster -->
+        <a href="marketplaces/ticketmaster.html" class="card ticketmaster">
+            <div class="card-content">
+                <div class="brand-logo">ticketmaster®</div>
+                <div class="subtext">Live Events. Unforgettable Experiences.</div>
+                <div class="tag"><i class="fa-solid fa-language"></i> International - English (en)</div>
+                <div class="btn"><i class="fa-solid fa-arrow-right"></i> View Marketplace</div>
+            </div>
+        </a>
+
+        <!-- Admin Dashboard -->
+        <a href="marketplaces/dashboard.html" class="card admin">
+            <div class="card-content">
+                <div class="admin-icon"><i class="fa-solid fa-lock"></i></div>
+                <div class="brand-logo" style="color: var(--admin);">ADMIN DASHBOARD</div>
+                <div class="subtext">Inventory Management, Stats & Upload</div>
+                <div class="btn"><i class="fa-solid fa-server"></i> Launch Dashboard</div>
+            </div>
+        </a>
+    </div>
+
+</body>
+</html>
