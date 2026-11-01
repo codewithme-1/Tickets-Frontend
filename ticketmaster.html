@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticketmaster Showcase</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --tm-bg: #0f172a;
+            --tm-surface: #1e293b;
+            --tm-blue: #026cdf;
+            --tm-text: #f8fafc;
+            --tm-muted: #94a3b8;
+            --tm-green: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--tm-bg); color: var(--tm-text); -webkit-font-smoothing: antialiased; }
+
+        /* Main Container to restrict width on PC */
+        .app-container { max-width: 600px; margin: 0 auto; background-color: var(--tm-bg); min-height: 100vh; position: relative; }
+
+        /* Header & Navigation */
+        .tm-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #334155; }
+        .tm-logo { font-size: 1.4rem; font-weight: 800; font-style: italic; letter-spacing: -0.5px; }
+        .tm-header-right { font-size: 1.2rem; cursor: pointer; }
+
+        .tm-search-bar { padding: 15px 20px; }
+        .search-input-container { position: relative; width: 100%; }
+        .search-input-container input { width: 100%; padding: 12px 40px 12px 15px; border-radius: 20px; border: none; background-color: var(--tm-surface); color: var(--tm-text); font-size: 0.95rem; outline: none; }
+        .search-input-container input::placeholder { color: var(--tm-muted); }
+        .search-input-container i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--tm-muted); pointer-events: none; }
+
+        .tm-categories { display: flex; gap: 20px; padding: 0 20px 15px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #334155; -webkit-overflow-scrolling: touch; font-size: 0.85rem; font-weight: 500; }
+        .tm-categories::-webkit-scrollbar { display: none; }
+        .tm-categories span { cursor: pointer; }
+
+        /* Main Content area */
+        .tm-content { padding: 20px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .section-title { font-size: 1.1rem; font-weight: 700; }
+        .see-all { color: var(--tm-blue); font-size: 0.85rem; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px; }
+
+        /* Ticket Cards (Updated to Vertical Stacked Design) */
+        .ticket-list { display: flex; flex-direction: column; gap: 20px; }
+        .tm-card { display: flex; flex-direction: column; background: var(--tm-surface); border-radius: 12px; overflow: hidden; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); }
+        .tm-card-img { width: 100%; height: 200px; object-fit: cover; flex-shrink: 0; border-bottom: 1px solid #334155; }
+        .tm-card-content { padding: 16px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; min-width: 0; }
+        
+        .tm-event-title { font-size: 1.15rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
+        .tm-event-meta { font-size: 0.85rem; color: var(--tm-muted); margin-bottom: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .tm-card-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; }
+        .tm-status { font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 12px; height: fit-content; }
+        .status-available { background-color: rgba(16, 185, 129, 0.1); color: var(--tm-green); border: 1px solid var(--tm-green); }
+        .status-sold { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
+        
+        /* Updated price block format to match design */
+        .price-block { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+        .get-tickets-btn { background-color: var(--tm-blue); color: white; border: none; padding: 8px 16px; border-radius: 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .get-tickets-btn:hover { background-color: #025ac0; }
+        .tm-price-sub { font-size: 0.75rem; color: var(--tm-muted); }
+
+        .no-events { text-align: center; padding: 40px 20px; color: var(--tm-muted); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="tm-header">
+            <div class="tm-logo">ticketmaster&reg;</div>
+            <div class="tm-header-right">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+        </header>
+
+        <div class="tm-search-bar">
+            <div class="search-input-container">
+                <input type="text" placeholder="Search All Events...">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+        </div>
+
+        <div class="tm-categories">
+            <span>Concerts</span>
+            <span>Sports</span>
+            <span>Arts & Theater</span>
+            <span>Festivals</span>
+        </div>
+
+        <main class="tm-content">
+            <div class="section-header">
+                <h2 class="section-title">Top Events</h2>
+                <a href="#" class="see-all">See All &rarr;</a>
+            </div>
+
+            <div class="ticket-list" id="tm-ticket-container">
+                <div class="no-events">Loading events...</div>
+            </div>
+        </main>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="ticketmaster.js"></script>
+</body>
+</html>
