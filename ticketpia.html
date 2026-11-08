@@ -3,188 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>チケットぴあ (Ticket Pia Showcase)</title>
-    <!-- Japanese Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>チケット詳細 (Ticket Pia Detail)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
     <style>
         :root {
-            --pia-blue: #0044cc;
-            --pia-light-blue: #e6f0ff;
-            --pia-red: #e60012;
-            --text-dark: #333333;
-            --text-gray: #666666;
-            --bg-gray: #f5f5f5;
+            --pia-blue: #0071ce;
+            --pia-text: #333333;
+            --pia-gray: #f5f5f5;
+            --pia-border: #e0e0e0;
+            --pia-orange: #ff6600;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Sans JP', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; }
+        body { background-color: var(--pia-gray); color: var(--pia-text); -webkit-font-smoothing: antialiased; }
+
+        .app-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; min-height: 100vh; position: relative; padding-bottom: 80px; }
+
+        /* Top Navigation Header */
+        .header-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid var(--pia-border); }
+        .logo-area { color: var(--pia-blue); font-size: 1.2rem; font-weight: bold; line-height: 1.1; }
+        .logo-area span { display: block; font-size: 0.7rem; }
+        .nav-icons { display: flex; gap: 15px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; color: #666; cursor: pointer; }
+        .nav-item i { font-size: 1.2rem; margin-bottom: 3px; color: #333; }
+
+        /* Page Title */
+        .page-title { font-size: 1.1rem; font-weight: bold; padding: 15px; border-bottom: 4px solid var(--pia-gray); }
+
+        /* Event Details Section */
+        .event-section { padding: 20px 15px; border-bottom: 4px solid var(--pia-gray); }
+        .artist-name { font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; letter-spacing: 2px; }
+        .detail-row { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 0.95rem; }
+        .detail-row i { width: 24px; color: #666; margin-top: 3px; }
+        .venue-link { color: var(--pia-blue); text-decoration: none; }
         
-        body { background-color: var(--bg-gray); color: var(--text-dark); }
+        .contact-number { background: #000; color: #fff; padding: 3px 8px; font-size: 0.8rem; display: inline-block; margin-top: 10px; border-radius: 2px; }
 
-        /* --- Header & Navigation (Hidden in screenshots) --- */
-        .site-header { background-color: white; border-bottom: 2px solid var(--pia-blue); }
-        .header-top { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; gap: 15px; }
-        .logo { font-size: 24px; font-weight: 700; color: var(--pia-blue); display: flex; align-items: center; gap: 8px; }
-        .search-bar { display: flex; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; width: 300px; max-width: 100%; }
-        .search-bar input { padding: 8px 12px; border: none; outline: none; width: 100%; font-size: 14px; }
-        .search-bar button { background: var(--pia-blue); color: white; border: none; padding: 8px 15px; cursor: pointer; }
+        /* Info Blocks Section */
+        .info-blocks { padding: 15px; }
+        .info-box { border: 1px solid var(--pia-border); border-radius: 4px; padding: 15px; margin-bottom: 15px; }
+        .info-title { font-weight: bold; font-size: 0.9rem; margin-bottom: 5px; }
+        .info-date { font-size: 1rem; margin-bottom: 5px; }
+        .info-note { font-size: 0.8rem; color: #666; display: flex; align-items: center; gap: 5px; margin-top: 10px; }
+
+        /* Ticket Possession Block */
+        .ticket-header { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; font-weight: bold; padding: 15px 15px 0; }
+        .ticket-header span { font-size: 1.3rem; }
+        .ticket-box { margin: 15px; border: 1px solid var(--pia-border); border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .seat-type { font-weight: bold; font-size: 1rem; margin-bottom: 5px; }
+        .ticket-price { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; }
+        .price-breakdown { font-size: 0.75rem; color: #666; }
+
+        /* Floating Action Button */
+        .fab-container { position: absolute; bottom: 0; right: 0; width: 100%; height: 100%; pointer-events: none; }
+        .fab-relative { position: absolute; bottom: 20px; right: 20px; width: 60px; height: 60px; background: white; border: 2px solid var(--pia-orange); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--pia-orange); font-size: 0.7rem; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); pointer-events: auto; cursor: pointer; }
+        .fab-relative i { font-size: 1.5rem; margin-bottom: 2px; }
         
-        .main-nav { background-color: var(--pia-blue); overflow-x: auto; }
-        .nav-list { display: flex; max-width: 1200px; margin: 0 auto; padding: 0 5%; list-style: none; white-space: nowrap; }
-        .nav-list li { padding: 12px 20px; color: white; font-size: 14px; font-weight: 500; cursor: pointer; }
-        .nav-list li:hover { background-color: rgba(255,255,255,0.1); }
-
-        /* --- Main Content Area --- */
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 5%; }
-        .section-title { font-size: 20px; font-weight: 700; border-left: 5px solid var(--pia-blue); padding-left: 15px; margin-bottom: 20px; }
-
-        /* --- Ticket Grid & Cards --- */
-        .ticket-list { display: flex; flex-direction: column; gap: 15px; }
-        
-        .ticket-card {
-            background: white;
-            border: 1px solid #e0e0e0;
-            display: flex;
-            padding: 20px;
-            gap: 20px;
-            align-items: stretch;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        /* Event Poster Style */
-        .event-poster {
-            width: 120px;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 4px;
-            border: 1px solid #eee;
-            flex-shrink: 0; /* Prevents image squishing on mobile */
-        }
-
-        /* Date Block */
-        .date-block {
-            text-align: center;
-            min-width: 90px;
-            border-right: 1px dashed #ccc;
-            padding-right: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .date-month { font-size: 14px; color: var(--text-gray); }
-        .date-day { font-size: 32px; font-weight: 700; color: var(--pia-blue); line-height: 1; margin: 5px 0; }
-        .date-time { font-size: 13px; color: var(--text-gray); }
-
-        /* Event Info */
-        .event-info { 
-            flex-grow: 1; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-        }
-        .status-badge { 
-            display: inline-block; background: var(--pia-light-blue); color: var(--pia-blue); 
-            font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 2px; margin-bottom: 8px; 
-        }
-        .event-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
-        .event-venue { font-size: 14px; color: var(--text-gray); display: flex; align-items: center; gap: 5px; }
-
-        /* Ticket Pricing & Actions */
-        .ticket-details { text-align: right; min-width: 150px; display: flex; flex-direction: column; justify-content: center; }
-        .ticket-category { font-size: 14px; font-weight: 700; color: var(--text-dark); }
-        .ticket-price { font-size: 22px; font-weight: 700; color: var(--pia-red); margin: 5px 0 15px 0; }
-        .buy-btn {
-            background: var(--pia-blue); color: white; border: none; padding: 10px 25px;
-            font-size: 14px; font-weight: 700; border-radius: 3px; cursor: pointer; width: 100%;
-        }
-
-        /* --- MOBILE RESPONSIVENESS --- */
-        @media (max-width: 768px) {
-            .header-top { justify-content: center; }
-            .search-bar { width: 100%; }
-            .nav-list li { padding: 12px 15px; }
-            
-            .ticket-card {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                padding: 15px;
-                gap: 15px;
-            }
-            
-            .date-block {
-                border-right: none;
-                border-bottom: 1px dashed #ccc;
-                padding-right: 0;
-                padding-bottom: 15px;
-                width: 100%;
-            }
-            
-            .event-poster {
-                width: 100%;
-                max-width: 250px;
-                height: 150px;
-            }
-            
-            .event-info { width: 100%; align-items: center; }
-            .event-venue { justify-content: center; }
-            
-            .ticket-details {
-                text-align: center;
-                width: 100%;
-                border-top: 1px solid #f0f0f0;
-                padding-top: 15px;
-            }
-            
-            .ticket-price { margin-bottom: 10px; }
-        }
-
-        /* --- SCREENSHOT / PRINT OPTIMIZATION --- */
-        @media print {
-            .site-header, .main-nav, .no-print { display: none !important; }
-            body { background: white; }
-            .container { margin: 0; padding: 0; max-width: 100%; }
-            .ticket-card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; margin-bottom: 10px; }
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-        }
+        .loading-text { text-align: center; padding: 40px; color: #666; }
     </style>
 </head>
 <body>
 
-    <!-- Header (Hidden during screenshots) -->
-    <header class="site-header no-print">
-        <div class="header-top">
-            <div class="logo"><i class="fa-solid fa-ticket-simple"></i> チケットぴあ</div>
-            <div class="search-bar">
-                <input type="text" placeholder="アーティスト名・イベント名で検索">
-                <button><i class="fa-solid fa-magnifying-glass"></i></button>
-            </div>
-        </div>
-        <nav class="main-nav">
-            <ul class="nav-list">
-                <li>トップ</li>
-                <li>コンサート</li>
-                <li>スポーツ</li>
-                <li>演劇・ステージ</li>
-                <li>イベント</li>
-            </ul>
-        </nav>
-    </header>
+    <div class="app-container" id="ticket-container">
+        <div class="loading-text">データを読み込んでいます... (Loading data...)</div>
+    </div>
 
-    <main class="container">
-        <h2 class="section-title">注目の公演 (Featured Events)</h2>
-        
-        <!-- Tickets will be injected here by JS -->
-        <div id="pia-ticket-container" class="ticket-list">
-            <!-- Loading state -->
-            <div style="text-align: center; padding: 40px; color: #666;">
-                <i class="fa-solid fa-spinner fa-spin"></i> データを読み込んでいます...
-            </div>
-        </div>
-    </main>
-
-   <!-- Add api.js right above your existing ticketpia.js script -->
     <script src="api.js"></script>
     <script src="ticketpia.js"></script>
 </body>
