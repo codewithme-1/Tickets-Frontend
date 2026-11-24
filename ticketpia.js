@@ -30,20 +30,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            // 1. Generate the Top Navigation (Sticky) & Page Title ONCE
+            // 1. Enlarged Sticky Top Navigation & Page Title
             let completeHTML = `
-                <div class="header-top" style="position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid #e0e0e0; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <div class="logo-area" style="color: #0071ce; font-size: 1.2rem; font-weight: bold; line-height: 1.1;">
-                        <span style="display: block; font-size: 0.7rem;">チケット</span>ぴあ
+                <div class="header-top" style="position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 16px 15px; border-bottom: 1px solid #e0e0e0; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <div class="logo-area" style="color: #0071ce; font-size: 1.55rem; font-weight: bold; line-height: 1.1;">
+                        <span style="display: block; font-size: 0.85rem;">チケット</span>ぴあ
                     </div>
-                    <div class="nav-icons" style="display: flex; gap: 15px;">
-                        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; color: #666;"><i class="fa-regular fa-user" style="font-size: 1.2rem; margin-bottom: 3px; color: #333;"></i>マイページ</div>
-                        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; color: #666;"><i class="fa-solid fa-ticket" style="font-size: 1.2rem; margin-bottom: 3px; color: #333;"></i>Myチケット</div>
-                        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; color: #666;"><i class="fa-solid fa-inbox" style="font-size: 1.2rem; margin-bottom: 3px; color: #333;"></i>抽選履歴</div>
-                        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; color: #666;"><i class="fa-solid fa-globe" style="font-size: 1.2rem; margin-bottom: 3px; color: #333;"></i>Language</div>
+                    <div class="nav-icons" style="display: flex; gap: 16px;">
+                        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; font-size: 0.78rem; color: #555;"><i class="fa-regular fa-user" style="font-size: 1.45rem; margin-bottom: 4px; color: #222;"></i>マイページ</div>
+                        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; font-size: 0.78rem; color: #555;"><i class="fa-solid fa-ticket" style="font-size: 1.45rem; margin-bottom: 4px; color: #222;"></i>Myチケット</div>
+                        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; font-size: 0.78rem; color: #555;"><i class="fa-solid fa-inbox" style="font-size: 1.45rem; margin-bottom: 4px; color: #222;"></i>抽選履歴</div>
+                        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; font-size: 0.78rem; color: #555;"><i class="fa-solid fa-globe" style="font-size: 1.45rem; margin-bottom: 4px; color: #222;"></i>Language</div>
                     </div>
                 </div>
-                <div class="page-title" style="font-size: 1.1rem; font-weight: bold; padding: 15px; border-bottom: 4px solid #f5f5f5; background: white;">
+                <div class="page-title" style="font-size: 1.4rem; font-weight: bold; padding: 14px 18px; border-bottom: 4px solid #f5f5f5; background: white;">
                     チケット詳細
                 </div>
             `;
@@ -69,35 +69,33 @@ document.addEventListener("DOMContentLoaded", async () => {
                 let imageBlock = "";
                 if (event.poster_url && event.poster_url.trim() !== "" && event.poster_url !== "EMPTY") {
                     imageBlock = `
-                        <div style="text-align: center; margin-bottom: 24px;">
+                        <div style="text-align: center; margin-bottom: 18px;">
                             <img src="${event.poster_url}" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.12);" alt="${event.title}">
                         </div>
                     `;
                 }
 
-                // Append each ticket block wrapped in a bottom border for visual separation
+                // Append each ticket block with zero upper gap and enlarged text
                 completeHTML += `
                     <div class="ticket-wrapper" style="border-bottom: 8px solid #f5f5f5; padding-bottom: 20px; background: white;">
-                        <div class="event-section" style="min-height: calc(100vh - 115px); display: flex; flex-direction: column; justify-content: space-between; padding: 28px 20px 36px; border-bottom: 4px solid #f5f5f5;">
-                            <div>
-                                ${imageBlock}
-                                <div class="artist-name" style="font-size: 2.2rem; font-weight: bold; line-height: 1.3; margin-bottom: 32px; letter-spacing: 1px;">${event.title}</div>
-                                
-                                <div class="detail-row" style="display: flex; align-items: flex-start; margin-bottom: 20px; font-size: 1.25rem;">
-                                    <i class="fa-regular fa-calendar" style="width: 34px; color: #666; margin-top: 4px; font-size: 1.3rem;"></i>
-                                    <div>${formattedDate} ${eventTime} 開演</div>
-                                </div>
-                                <div class="detail-row" style="display: flex; align-items: flex-start; margin-bottom: 20px; font-size: 1.25rem; color: #666;">
-                                    <i class="fa-regular fa-clock" style="width: 34px; color: #666; margin-top: 4px; font-size: 1.3rem;"></i>
-                                    <div>${formattedDate} ${doorsOpenTime} 開場</div>
-                                </div>
-                                <div class="detail-row" style="display: flex; align-items: flex-start; margin-bottom: 20px; font-size: 1.25rem;">
-                                    <i class="fa-solid fa-location-dot" style="width: 34px; margin-top: 4px; color: #0071ce; font-size: 1.3rem;"></i>
-                                    <div><span style="color: #0071ce; text-decoration: none; font-weight: 500;">${event.venue}</span></div>
-                                </div>
+                        <div class="event-section" style="padding: 12px 18px 24px; border-bottom: 4px solid #f5f5f5;">
+                            ${imageBlock}
+                            <div class="artist-name" style="font-size: 2.3rem; font-weight: bold; line-height: 1.25; margin-bottom: 22px; letter-spacing: 0.5px;">${event.title}</div>
+                            
+                            <div class="detail-row" style="display: flex; align-items: flex-start; margin-bottom: 14px; font-size: 1.35rem;">
+                                <i class="fa-regular fa-calendar" style="width: 34px; color: #666; margin-top: 4px; font-size: 1.4rem;"></i>
+                                <div>${formattedDate} ${eventTime} 開演</div>
+                            </div>
+                            <div class="detail-row" style="display: flex; align-items: flex-start; margin-bottom: 14px; font-size: 1.35rem; color: #666;">
+                                <i class="fa-regular fa-clock" style="width: 34px; color: #666; margin-top: 4px; font-size: 1.4rem;"></i>
+                                <div>${formattedDate} ${doorsOpenTime} 開場</div>
+                            </div>
+                            <div class="detail-row" style="display: flex; align-items: flex-start; margin-bottom: 18px; font-size: 1.35rem;">
+                                <i class="fa-solid fa-location-dot" style="width: 34px; margin-top: 4px; color: #0071ce; font-size: 1.4rem;"></i>
+                                <div><span style="color: #0071ce; text-decoration: none; font-weight: 500;">${event.venue}</span></div>
                             </div>
 
-                            <div class="contact-number" style="background: #000; color: #fff; padding: 12px 14px; font-size: 0.95rem; display: block; width: 100%; text-align: center; border-radius: 4px; letter-spacing: 0.5px;">
+                            <div class="contact-number" style="background: #000; color: #fff; padding: 12px 14px; font-size: 1.05rem; display: block; width: 100%; text-align: center; border-radius: 4px; letter-spacing: 0.5px;">
                                 お問い合わせの際にご利用いただく番号 ${event.id.substring(0,8).toUpperCase()}
                             </div>
                         </div>
