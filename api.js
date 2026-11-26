@@ -16,6 +16,8 @@ async function saveTicketToDB(ticketData) {
         event_time: ticketData.event_time,
         poster_url: ticketData.poster_url,
         status: "published",
+        ticketing_start: ticketData.ticketing_start || "",
+        distribution_start: ticketData.distribution_start || "",
         tickets: [
             {
                 category: ticketData.category,
@@ -53,6 +55,8 @@ async function updateEventInDB(eventId, ticketData) {
         event_time: ticketData.event_time,
         poster_url: ticketData.poster_url || null,
         status: "published",
+        ticketing_start: ticketData.ticketing_start || "",
+        distribution_start: ticketData.distribution_start || "",
         tickets: [
             {
                 category: ticketData.category,
