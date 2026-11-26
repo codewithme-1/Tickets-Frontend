@@ -7,13 +7,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const pageTitle = document.getElementById("page-title");
     const form = document.getElementById("add-ticket-form");
     const tbody = document.querySelector("#inventory-table tbody");
-    
+    const marketplaceSelect = document.getElementById("marketplace");
+    const tmSeatFields = document.getElementById("tm-seat-fields");
+    const submitBtn = form.querySelector('button[type="submit"]');
+
     // Modal Elements
     const modal = document.getElementById("custom-modal");
     const modalTitle = document.getElementById("modal-title");
     const modalMessage = document.getElementById("modal-message");
     const modalIcon = document.getElementById("modal-icon");
     const modalActions = document.getElementById("modal-actions");
+
+    let cachedEvents = [];
+    let editingEventId = null;
+
+    // Toggle Ticketmaster-specific seat inputs
+    function toggleTmFields() {
+        if (!tmSeatFields) return;
+        tmSeatFields.classList.toggle("visible", marketplaceSelect.value === "ticketmaster");
+    }
+    marketplaceSelect.addEventListener("change", toggleTmFields);
+    toggleTmFields();
+
+    function resetEditMode() {
+        editingEventId = null;
+        form.reset();
+        toggleTmFields();
+        pageTitle.innerText = "Create Listing";
+        submitBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish to Showcase';
+    }
 
     // Initialize Dashboard
     updateDashboardStats();
@@ -22,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function showModal(title, message, type = "success", onConfirm = null) {
         modalTitle.innerText = title;
         modalMessage.innerText = message;
-        
+
         if (type === "success") {
             modalIcon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
             modalIcon.style.color = "var(--accent)";
@@ -41,18 +63,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 modal.classList.remove("active");
             });
         }
-        
+
         modal.classList.add("active");
     }
 
     // Tab Switching Logic
     navAdd.addEventListener("click", () => {
+        resetEditMode();
         navAdd.classList.add("active"); navInventory.classList.remove("active");
         sectionAdd.classList.add("active"); sectionInventory.classList.remove("active");
-        pageTitle.innerText = "Create Listing";
     });
 
     navInventory.addEventListener("click", () => {
+        editingEventId = null;
         navInventory.classList.add("active"); navAdd.classList.remove("active");
         sectionInventory.classList.add("active"); sectionAdd.classList.remove("active");
         pageTitle.innerText = "Inventory List";
@@ -62,57 +85,119 @@ document.addEventListener("DOMContentLoaded", () => {
     // Form Submission with Image Processing
     form.addEventListener("submit", (e) => {
         e.preventDefault();
-        
+
         const fileInput = document.getElementById("poster");
         const file = fileInput.files[0];
 
         if (file) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                const base64Image = event.target.result;
-                processTicketSave(base64Image);
+                processTicketSave(event.target.result);
             };
             reader.readAsDataURL(file);
         } else {
-            processTicketSave(""); 
+            processTicketSave("");
         }
     });
 
     async function processTicketSave(posterUrl) {
+        const marketplace = marketplaceSelect.value;
         const ticketData = {
-            marketplace_id: document.getElementById("marketplace").value,
+            marketplace_id: marketplace,
             title: document.getElementById("title").value,
             venue: document.getElementById("venue").value,
             event_date: document.getElementById("date").value,
             event_time: document.getElementById("time").value,
             category: document.getElementById("category").value,
             price: parseFloat(document.getElementById("price").value),
-            quantity: parseInt(document.getElementById("quantity").value),
+            quantity: parseInt(document.getElementById("quantity").value, 10) || 1,
             status: document.getElementById("status").value,
             poster_url: posterUrl
         };
 
-        await saveTicketToDB(ticketData); 
-        updateDashboardStats();
-        
-        showModal("Success", `Successfully published ticket to ${ticketData.marketplace_id}!`, "success");
-        form.reset();
+        if (marketplace === "ticketmaster") {
+            ticketData.section = document.getElementById("tm-section")?.value.trim() || "General";
+            ticketData.row = document.getElementById("tm-row")?.value.trim() || "1";
+            ticketData.seat_start = parseInt(document.getElementById("tm-seat-start")?.value, 10) || 1;
+            ticketData.order_number = document.getElementById("tm-order-num")?.value.trim() || "";
+        }
+
+        if (editingEventId) {
+            const res = await updateEventInDB(editingEventId, ticketData);
+            if (!res) {
+                showModal("Error", "Failed to update listing.", "success");
+                return;
+            }
+            resetEditMode();
+            updateDashboardStats();
+            showModal("Updated", `Successfully updated "${ticketData.title}"!`, "success");
+            navInventory.click();
+        } else {
+            await saveTicketToDB(ticketData);
+            updateDashboardStats();
+            showModal("Success", `Successfully published ticket to ${ticketData.marketplace_id}!`, "success");
+            resetEditMode();
+        }
     }
+
+    // Edit Item
+    window.editEvent = function(id) {
+        const ev = cachedEvents.find(e => e.id === id);
+        if (!ev) return;
+
+        editingEventId = ev.id;
+        const slug = ev.marketplaces?.slug || "ticketmaster";
+        const availTickets = (ev.tickets || []).filter(t => t.status !== "transferred");
+        const firstTicket = availTickets[0] || ev.tickets?.[0] || {};
+
+        marketplaceSelect.value = slug;
+        toggleTmFields();
+
+        document.getElementById("title").value = ev.title || "";
+        document.getElementById("venue").value = ev.venue || "";
+        document.getElementById("date").value = ev.event_date || "";
+        document.getElementById("time").value = (ev.event_time || "19:00").substring(0, 5);
+        document.getElementById("category").value = firstTicket.category || "";
+        document.getElementById("price").value = firstTicket.price ?? 0;
+        document.getElementById("quantity").value = slug === "ticketmaster" ? (availTickets.length || 1) : (firstTicket.quantity || 1);
+        document.getElementById("status").value = firstTicket.status || "available";
+
+        if (slug === "ticketmaster") {
+            const secEl = document.getElementById("tm-section");
+            const rowEl = document.getElementById("tm-row");
+            const seatEl = document.getElementById("tm-seat-start");
+            const orderEl = document.getElementById("tm-order-num");
+            if (secEl) secEl.value = firstTicket.section || "";
+            if (rowEl) rowEl.value = firstTicket.row || "";
+            if (seatEl) seatEl.value = parseInt(firstTicket.seat_number, 10) || 1;
+            if (orderEl) orderEl.value = firstTicket.order_number || "";
+        }
+
+        navAdd.classList.add("active"); navInventory.classList.remove("active");
+        sectionAdd.classList.add("active"); sectionInventory.classList.remove("active");
+        pageTitle.innerText = "Edit Listing";
+        submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+    };
 
     // Render Inventory Table
     async function renderInventoryTable() {
-        const db = await fetchAllEvents(); 
+        cachedEvents = await fetchAllEvents();
         tbody.innerHTML = "";
 
-        db.forEach((event) => {
+        cachedEvents.forEach((event) => {
+            const firstTicket = (event.tickets && event.tickets.length > 0) ? event.tickets[0] : { price: 0, status: "available" };
+            const marketLabel = event.marketplaces?.name || event.marketplaces?.slug || event.marketplace_id;
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td><span class="badge">${event.marketplace_id}</span></td>
+                <td><span class="badge">${marketLabel}</span></td>
                 <td>${event.title}</td>
                 <td>${event.event_date}</td>
-                <td>${event.tickets[0].price}</td>
-                <td><span class="badge">${event.tickets[0].status}</span></td>
-                <td><button class="btn-delete" onclick="deleteEvent('${event.id}')"><i class="fa-solid fa-trash"></i></button></td>
+                <td>${firstTicket.price}</td>
+                <td><span class="badge">${firstTicket.status}</span></td>
+                <td style="display:flex;gap:8px;align-items:center;">
+                    <button onclick="editEvent('${event.id}')" style="background:#3b82f6;color:white;border:none;padding:8px 12px;border-radius:4px;cursor:pointer;" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="btn-delete" onclick="deleteEvent('${event.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                </td>
             `;
             tbody.appendChild(tr);
         });
@@ -130,19 +215,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 showModal("Error", "Failed to delete the listing from the database.", "confirm");
             }
         });
-    }
+    };
 
     // Update Statistics
     async function updateDashboardStats() {
-        const db = await fetchAllEvents(); 
+        const db = await fetchAllEvents();
+        cachedEvents = db;
         document.getElementById("stat-total").innerText = db.length;
-        
+
         let avail = 0; let sold = 0;
         db.forEach(ev => {
-            if(ev.tickets[0].status === 'available') avail++;
+            const status = ev.tickets?.[0]?.status || "available";
+            if (status === "available") avail++;
             else sold++;
         });
-        
+
         document.getElementById("stat-avail").innerText = avail;
         document.getElementById("stat-sold").innerText = sold;
     }
