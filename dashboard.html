@@ -42,6 +42,9 @@
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { display: flex; flex-direction: column; gap: 8px; }
         .full-width { grid-column: 1 / -1; }
+        .tm-only-grid { grid-column: 1 / -1; display: none; grid-template-columns: 1fr 1fr; gap: 20px; padding: 16px; background: rgba(2, 108, 223, 0.08); border: 1px solid rgba(2, 108, 223, 0.35); border-radius: 8px; }
+        .tm-only-grid.visible { display: grid; }
+        .tm-section-title { grid-column: 1 / -1; font-size: 0.85rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; }
 
         label { font-size: 0.9rem; color: var(--text-muted); }
         input, select, textarea { background: var(--input-bg); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 6px; outline: none; width: 100%; transition: border-color 0.2s; }
@@ -57,6 +60,8 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
         th { color: var(--text-muted); font-weight: 500; white-space: nowrap; }
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; background: rgba(255,255,255,0.1); white-space: nowrap; }
+        .btn-edit { background: #3b82f6; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        .btn-edit:hover { background: #2563eb; }
         .btn-delete { background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
         .btn-delete:hover { background: #dc2626; }
 
@@ -80,7 +85,7 @@
             .nav-links { flex-direction: row; overflow-x: auto; padding-bottom: 5px; -webkit-overflow-scrolling: touch; }
             .logout { margin-top: 0; }
             .main-content { padding: 15px; }
-            .form-grid { grid-template-columns: 1fr; }
+            .form-grid, .tm-only-grid { grid-template-columns: 1fr; }
             .card-section { padding: 15px; }
         }
     </style>
@@ -108,7 +113,7 @@
             <div class="stat-card"><div class="stat-title">Sold/Reserved</div><div class="stat-value" id="stat-sold" style="color: #ef4444;">0</div></div>
         </div>
 
-        <!-- Add Ticket Section -->
+        <!-- Add / Edit Ticket Section -->
         <div id="section-add" class="card-section active">
             <form id="add-ticket-form">
                 <div class="form-grid">
@@ -127,9 +132,9 @@
                     <div class="form-group"><label>Venue</label><input type="text" id="venue" required></div>
                     <div class="form-group"><label>Date</label><input type="date" id="date" required></div>
                     <div class="form-group"><label>Time</label><input type="time" id="time" required></div>
-                    <div class="form-group"><label>Ticket Category (e.g., SS席)</label><input type="text" id="category" required></div>
+                    <div class="form-group"><label>Ticket Category (e.g., Standard Ticket / SS席)</label><input type="text" id="category" required></div>
                     <div class="form-group"><label>Price</label><input type="number" id="price" required></div>
-                    <div class="form-group"><label>Quantity</label><input type="number" id="quantity" value="1" required></div>
+                    <div class="form-group"><label>Quantity</label><input type="number" id="quantity" value="1" min="1" required></div>
                     <div class="form-group"><label>Status</label>
                         <select id="status">
                             <option value="available">Available</option>
@@ -138,13 +143,35 @@
                         </select>
                     </div>
 
+                    <!-- Ticketmaster Seat Details -->
+                    <div id="tm-seat-fields" class="tm-only-grid">
+                        <div class="tm-section-title"><i class="fa-solid fa-chair"></i> Ticketmaster Seat Details</div>
+                        <div class="form-group">
+                            <label>Section (e.g., Occidental Baja)</label>
+                            <input type="text" id="tm-section" placeholder="Occidental Baja">
+                        </div>
+                        <div class="form-group">
+                            <label>Row (e.g., 12)</label>
+                            <input type="text" id="tm-row" placeholder="12">
+                        </div>
+                        <div class="form-group">
+                            <label>Starting Seat Number (e.g., 5 → creates 5, 6, 7)</label>
+                            <input type="number" id="tm-seat-start" value="1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Order Number (optional)</label>
+                            <input type="text" id="tm-order-num" placeholder="TM-SEED-BTS-CO">
+                        </div>
+                    </div>
+
                     <div class="form-group full-width">
                         <label>Event Poster Image</label>
                         <input type="file" id="poster" accept="image/*">
                     </div>
 
-                    <div class="form-group full-width">
+                    <div class="form-group full-width" style="flex-direction: row; gap: 12px;">
                         <button type="submit" class="btn-submit"><i class="fa-solid fa-cloud-arrow-up"></i> Publish to Showcase</button>
+                        <button type="button" id="btn-cancel-edit" class="btn-cancel" style="display: none;" onclick="document.getElementById('nav-inventory').click()">Cancel Edit</button>
                     </div>
                 </div>
             </form>
