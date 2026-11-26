@@ -58,13 +58,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                 try {
                     let [hours, mins] = eventTime.split(':');
                     hours = parseInt(hours) - 2;
-                    if(hours < 0) hours = 0;
+                    if (hours < 0) hours = 0;
                     doorsOpenTime = `${hours.toString().padStart(2, '0')}:${mins}`;
                 } catch(e) {}
 
                 const ticketPrice = mainTicket.price || 0;
                 const fees = 1995; 
                 const basePrice = ticketPrice - fees > 0 ? ticketPrice - fees : ticketPrice;
+
+                const ticketingStart = (event.ticketing_start && event.ticketing_start.trim() !== "")
+                    ? event.ticketing_start
+                    : "2026/11/4(水) 10:00～";
+                const distributionStart = (event.distribution_start && event.distribution_start.trim() !== "")
+                    ? event.distribution_start
+                    : "2026/11/4(水) 10:00～";
 
                 let imageBlock = "";
                 if (event.poster_url && event.poster_url.trim() !== "" && event.poster_url !== "EMPTY") {
@@ -103,7 +110,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <div class="info-blocks" style="padding: 15px;">
                             <div class="info-box" style="border: 1px solid #e0e0e0; border-radius: 4px; padding: 15px; margin-bottom: 15px;">
                                 <div class="info-title" style="font-weight: bold; font-size: 0.9rem; margin-bottom: 5px;">発券開始日時</div>
-                                <div class="info-date" style="font-size: 1rem; margin-bottom: 5px;">2026/11/4(水) 10:00～</div>
+                                <div class="info-date" style="font-size: 1rem; margin-bottom: 5px;">${ticketingStart}</div>
                                 <div class="info-note" style="color: #333; margin-top: 5px; font-size: 0.8rem;">
                                     MOALAにて発券してください。
                                 </div>
@@ -111,7 +118,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                             <div class="info-box" style="border: 1px solid #e0e0e0; border-radius: 4px; padding: 15px;">
                                 <div class="info-title" style="font-weight: bold; font-size: 0.9rem; margin-bottom: 5px;">分配開始日時</div>
-                                <div class="info-date" style="font-size: 1rem; margin-bottom: 5px;">2026/11/4(水) 10:00～</div>
+                                <div class="info-date" style="font-size: 1rem; margin-bottom: 5px;">${distributionStart}</div>
                                 <div class="info-note" style="color: #666; font-size: 0.8rem; margin-top: 10px;">
                                     <i class="fa-solid fa-circle-exclamation"></i> 本公演は同行者への分配必須です。
                                 </div>
