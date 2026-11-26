@@ -9,7 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const tbody = document.querySelector("#inventory-table tbody");
     const marketplaceSelect = document.getElementById("marketplace");
     const tmSeatFields = document.getElementById("tm-seat-fields");
+    const piaExtraFields = document.getElementById("pia-extra-fields");
     const submitBtn = form.querySelector('button[type="submit"]');
+    const cancelEditBtn = document.getElementById("btn-cancel-edit");
 
     // Modal Elements
     const modal = document.getElementById("custom-modal");
@@ -21,20 +23,22 @@ document.addEventListener("DOMContentLoaded", () => {
     let cachedEvents = [];
     let editingEventId = null;
 
-    // Toggle Ticketmaster-specific seat inputs
-    function toggleTmFields() {
-        if (!tmSeatFields) return;
-        tmSeatFields.classList.toggle("visible", marketplaceSelect.value === "ticketmaster");
+    // Toggle marketplace-specific inputs
+    function toggleMarketplaceFields() {
+        const val = marketplaceSelect.value;
+        if (tmSeatFields) tmSeatFields.classList.toggle("visible", val === "ticketmaster");
+        if (piaExtraFields) piaExtraFields.classList.toggle("visible", val === "ticketpia");
     }
-    marketplaceSelect.addEventListener("change", toggleTmFields);
-    toggleTmFields();
+    marketplaceSelect.addEventListener("change", toggleMarketplaceFields);
+    toggleMarketplaceFields();
 
     function resetEditMode() {
         editingEventId = null;
         form.reset();
-        toggleTmFields();
+        toggleMarketplaceFields();
         pageTitle.innerText = "Create Listing";
         submitBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish to Showcase';
+        if (cancelEditBtn) cancelEditBtn.style.display = "none";
     }
 
     // Initialize Dashboard
@@ -76,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     navInventory.addEventListener("click", () => {
         editingEventId = null;
+        if (cancelEditBtn) cancelEditBtn.style.display = "none";
         navInventory.classList.add("active"); navAdd.classList.remove("active");
         sectionInventory.classList.add("active"); sectionAdd.classList.remove("active");
         pageTitle.innerText = "Inventory List";
@@ -122,6 +127,11 @@ document.addEventListener("DOMContentLoaded", () => {
             ticketData.order_number = document.getElementById("tm-order-num")?.value.trim() || "";
         }
 
+        if (marketplace === "ticketpia") {
+            ticketData.ticketing_start = document.getElementById("pia-ticketing-start")?.value.trim() || "";
+            ticketData.distribution_start = document.getElementById("pia-distribution-start")?.value.trim() || "";
+        }
+
         if (editingEventId) {
             const res = await updateEventInDB(editingEventId, ticketData);
             if (!res) {
@@ -151,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const firstTicket = availTickets[0] || ev.tickets?.[0] || {};
 
         marketplaceSelect.value = slug;
-        toggleTmFields();
+        toggleMarketplaceFields();
 
         document.getElementById("title").value = ev.title || "";
         document.getElementById("venue").value = ev.venue || "";
@@ -173,10 +183,18 @@ document.addEventListener("DOMContentLoaded", () => {
             if (orderEl) orderEl.value = firstTicket.order_number || "";
         }
 
+        if (slug === "ticketpia") {
+            const tsEl = document.getElementById("pia-ticketing-start");
+            const dsEl = document.getElementById("pia-distribution-start");
+            if (tsEl) tsEl.value = ev.ticketing_start || "";
+            if (dsEl) dsEl.value = ev.distribution_start || "";
+        }
+
         navAdd.classList.add("active"); navInventory.classList.remove("active");
         sectionAdd.classList.add("active"); sectionInventory.classList.remove("active");
         pageTitle.innerText = "Edit Listing";
         submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+        if (cancelEditBtn) cancelEditBtn.style.display = "inline-flex";
     };
 
     // Render Inventory Table
@@ -195,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${firstTicket.price}</td>
                 <td><span class="badge">${firstTicket.status}</span></td>
                 <td style="display:flex;gap:8px;align-items:center;">
-                    <button onclick="editEvent('${event.id}')" style="background:#3b82f6;color:white;border:none;padding:8px 12px;border-radius:4px;cursor:pointer;" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="btn-edit" onclick="editEvent('${event.id}')" style="background:#3b82f6;color:white;border:none;padding:8px 12px;border-radius:4px;cursor:pointer;" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
                     <button class="btn-delete" onclick="deleteEvent('${event.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
                 </td>
             `;
